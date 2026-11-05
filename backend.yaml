@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trafficcop-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trafficcop-backend
+  template:
+    metadata:
+      labels:
+        app: trafficcop-backend
+    spec:
+      containers:
+      - name: api
+        image: trafficcop-backend:v1
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trafficcop-backend-svc
+spec:
+  selector:
+    app: trafficcop-backend
+  ports:
+    - port: 80
+      targetPort: 8000
