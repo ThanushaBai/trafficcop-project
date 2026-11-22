@@ -6,14 +6,16 @@
 ![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)
 ![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
+![CloudWatch](https://img.shields.io/badge/CloudWatch-FF4F8B?style=for-the-badge&logo=amazoncloudwatch&logoColor=white)
 
-TrafficCop is a cloud-native API Gateway built to protect backend applications from DDoS attacks and malicious payloads. Built using Nginx, FastAPI, and Kubernetes (K3s), it sits at the edge of the network, enforcing rate limits and Web Application Firewall (WAF) rules before traffic ever reaches the internal application.
+TrafficCop is a cloud-native API Gateway built to protect backend applications from DDoS attacks and malicious payloads. Built using Nginx, FastAPI, and Kubernetes (K3s/AWS EKS), it sits at the edge of the network, enforcing rate limits and Web Application Firewall (WAF) rules before traffic ever reaches the internal application.
 
 ## 🚀 Key Features
 - **Reverse Proxy Architecture:** The FastAPI backend is completely hidden from the public internet using a Kubernetes `ClusterIP` service. All external traffic must pass through the Nginx Gateway.
 - **DDoS Mitigation (Rate Limiting):** Implemented Nginx's Token Bucket algorithm (`limit_req_zone`) to restrict IPs to 3 requests per second, returning `HTTP 429 Too Many Requests` during traffic floods.
 - **Web Application Firewall (WAF):** Configured regex-based Nginx rules to instantly block SQL Injection payloads (e.g., `' OR 1=1 --`) with `HTTP 403 Forbidden`.
-- **Production-Ready Containerization:** Both the Gateway and Backend are built as lightweight Docker images deployed to a lightweight K3s cluster.
+- **Production-Ready Containerization:** Both the Gateway and Backend are built as lightweight Docker images.
+- **Cloud Monitoring:** Integrated AWS CloudWatch Container Insights to monitor CPU and Memory utilization of the EKS cluster and individual pods in real-time.
 
 ## 🏗️ Architecture
 ![TrafficCop Architecture](./screenshots/00-architecture.png)
@@ -46,18 +48,26 @@ The Nginx Gateway logs prove the rate limiter and WAF are actively protecting th
 
 ---
 
-## ☁️ AWS Cloud Deployment (EKS, ECR, ELB)
+## ☁️ AWS Cloud Deployment & Monitoring (EKS, ECR, ELB, CloudWatch)
 
 This application was successfully deployed to a managed **AWS EKS (Elastic Kubernetes Service)** cluster to simulate a production cloud environment.
 
 **Infrastructure Provisioned:**
 *   **AWS EKS:** Managed Kubernetes cluster with 2 `t3.small` worker nodes.
-*   **AWS ECR (Elastic Container Registry):** Private Docker registry used to store the `trafficcop-backend:v1` image.
-*   **AWS ELB (Elastic Load Balancer):** Provisioned dynamically to expose the Nginx Gateway to the public internet.
+*   **AWS ECR:** Private Docker registry used to store the `trafficcop-backend:v1` image.
+*   **AWS ELB:** Provisioned dynamically to expose the Nginx Gateway to the public internet.
+*   **AWS CloudWatch:** Integrated Container Insights for real-time observability.
 
 **Live Proof:**
 ![AWS Curl Proof](./screenshots/aws-curl-proof.png)
 ![AWS EKS Console](./screenshots/aws-eks-console.png)
+
+**CloudWatch Monitoring Proof:**
+*Cluster Overview:*
+![AWS CloudWatch Cluster](./screenshots/aws-cloudwatch-cluster.png)
+
+*Pod CPU/Memory Metrics During DDoS Attack:*
+![AWS CloudWatch Pods](./screenshots/aws-cloudwatch-pods.png)
 
 *(Note: The infrastructure was torn down using `eksctl delete cluster` after testing to ensure zero ongoing cloud costs).*
 
@@ -68,4 +78,5 @@ This application was successfully deployed to a managed **AWS EKS (Elastic Kuber
 **Backend:** Python (FastAPI)  
 **Orchestration:** Kubernetes (K3s), AWS EKS  
 **Networking:** NodePort, ClusterIP, Reverse Proxy, WAF, Rate Limiting, AWS ELB  
+**Monitoring:** AWS CloudWatch (Container Insights)  
 **Registries:** AWS ECR
