@@ -2,6 +2,11 @@
 
 **Stop the bad traffic. Protect the backend.**
 
+![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
+![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
+
 TrafficCop is a cloud-native API Gateway built to protect backend applications from DDoS attacks and malicious payloads. Built using Nginx, FastAPI, and Kubernetes (K3s), it sits at the edge of the network, enforcing rate limits and Web Application Firewall (WAF) rules before traffic ever reaches the internal application.
 
 ## 🚀 Key Features
@@ -41,8 +46,26 @@ The Nginx Gateway logs prove the rate limiter and WAF are actively protecting th
 
 ---
 
+## ☁️ AWS Cloud Deployment (EKS, ECR, ELB)
+
+This application was successfully deployed to a managed **AWS EKS (Elastic Kubernetes Service)** cluster to simulate a production cloud environment.
+
+**Infrastructure Provisioned:**
+*   **AWS EKS:** Managed Kubernetes cluster with 2 `t3.small` worker nodes.
+*   **AWS ECR (Elastic Container Registry):** Private Docker registry used to store the `trafficcop-backend:v1` image.
+*   **AWS ELB (Elastic Load Balancer):** Provisioned dynamically to expose the Nginx Gateway to the public internet.
+
+**Live Proof:**
+![AWS Curl Proof](./screenshots/aws-curl-proof.png)
+![AWS EKS Console](./screenshots/aws-eks-console.png)
+
+*(Note: The infrastructure was torn down using `eksctl delete cluster` after testing to ensure zero ongoing cloud costs).*
+
+---
+
 ## 🛠️ Tech Stack
 **Gateway:** Nginx (Alpine)  
 **Backend:** Python (FastAPI)  
-**Orchestration:** Kubernetes (K3s)  
-**Networking:** NodePort, ClusterIP, Reverse Proxy, WAF, Rate Limiting
+**Orchestration:** Kubernetes (K3s), AWS EKS  
+**Networking:** NodePort, ClusterIP, Reverse Proxy, WAF, Rate Limiting, AWS ELB  
+**Registries:** AWS ECR
